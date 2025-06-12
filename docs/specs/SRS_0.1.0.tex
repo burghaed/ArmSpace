@@ -1,0 +1,168 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{xcolor}
+
+\geometry{left=3cm,right=3cm,top=2.5cm,bottom=2.5cm}
+
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	urlcolor=cyan,
+	pdftitle={Specification: Joint Angle Calculation for Robot Arm},
+	pdfauthor={Eduard Burghardt}
+}
+
+\title{Specification: Joint Angle Calculation for Robot Arm}
+\author{Eduard Burghardt}
+\date{\today}
+
+% Define a macro for missing sections (visible but compile-able)
+\newcommand{\missing}[1]{\textbf{\textcolor{red}{[MISSING: #1]}}}
+
+\begin{document}
+	
+	\maketitle
+	
+	\tableofcontents
+	\newpage
+	
+	\section{Introduction}
+	
+	This document specifies a small program to calculate joint angles of a multi-segment robot arm.  
+	Visualization and user interface are not part of this project.
+	
+	\section{Objectives}
+	
+	The program shall read a configuration file describing the robot arm’s structure and  
+	calculate joint angles to reach a given target position. The results shall be output to a file.
+	
+	\section{Requirements}
+	
+	\subsection{Functional Requirements}
+	
+	\begin{itemize}
+		\item Read a JSON configuration file including:
+		\begin{itemize}
+			\item Number of joints
+			\item Lengths of arm segments
+			\item Direction of arm segments
+			\item Rotation axes of joints (each with maximal 2 degrees of freedom)
+			\item Minimum and maximum joint angle limits
+			\item Target position in the global coordinate system
+		\end{itemize}
+		\item Calculate joint angles (inverse kinematics) to reach the target position.
+		\item Output the calculated angles to a file (e.g., JSON or plain text).
+		\item The global coordinate system origin is located at the first joint.
+		\item Handle errors such as unreachable targets gracefully.
+		\item \missing{Additional motion constraints, tool orientation, or obstacle avoidance logic.}
+	\end{itemize}
+	
+	\subsection{Additional Functional Requirements}
+	
+	\begin{itemize}
+		\item Each joint should have a defined position in the global coordinate system.
+		\item The definition of the robotic arm should include a direction vector.
+		\item Each joint's rotation is limited to a maximum of two degrees of freedom (DOF).
+	\end{itemize}
+	
+	\subsection{Non-Functional Requirements}
+	
+	\begin{itemize}
+		\item Platform independence: development on Mac OS X, execution on Windows.
+		\item Usability: user has minimal computer skills, can only edit the JSON file if needed.
+		\item Performance: calculations should complete in reasonable time; no real-time constraints.
+		\item Extensibility: design should allow future integration of visualization and GUI.
+		\item No current considerations are required for privacy or security measures.
+	\end{itemize}
+	
+	\section{System Architecture}
+	
+	\begin{itemize}
+		\item \textbf{Parser Module}: reads and validates the JSON configuration.
+		\item \textbf{Kinematics Module}: performs inverse kinematics calculation (e.g., CCD algorithm).
+		\item \textbf{Output Module}: writes the computed joint angles to a file.
+		\item \missing{Description of module communication and error handling}
+	\end{itemize}
+	
+	\section{Data Format}
+	
+	\subsection{JSON Configuration File}
+	
+	\begin{verbatim}
+		{
+			"joints": [
+			{
+				"name": "base",
+				"dir" : [0, 0, 1],
+				"length": 100.0,
+				"rotation_axis": [0, 0, 1],
+				"min_angle": -90,
+				"max_angle": 90
+			},
+			{
+				"name": "elbow",
+				"dir" : [0, 1, 0],
+				"length": 80.0,
+				"rotation_axis": [0, 1, 0],
+				"min_angle": 0,
+				"max_angle": 135
+			}
+			],
+			"target": [120, 80, 0]
+		}
+	\end{verbatim}
+	
+	\subsection{Output File}
+	
+	Example output (JSON):
+	
+	\begin{verbatim}
+		{
+			"joint_angles": {
+				"base": 45.0,
+				"elbow": 30.0
+			}
+		}
+	\end{verbatim}
+	
+	\section{Mathematical Model}
+	
+	\subsection{Kinematics}
+	
+	\begin{itemize}
+		\item Each joint rotation is modeled as a rotation around a fixed axis by an angle $\theta_i$.
+		\item The end-effector position is computed by sequential transformations of all joints in the global coordinate frame.
+		\item The inverse kinematics finds angles $\theta_i$ that position the end-effector as close as possible to the target.
+	\end{itemize}
+	
+	\subsection{Constraints}
+	
+	\begin{itemize}
+		\item Rotations are limited to one degree of freedom per joint (1 DOF).
+		\item Joint angle limits are enforced.
+		\item If the target is unreachable, the best possible approximation is computed.
+		\item \missing{Further mathematical details such as algorithm choice and solution approach}
+	\end{itemize}
+	
+	\section{Error Handling}
+	
+	\begin{itemize}
+		\item Invalid or incomplete JSON file: produce an error message and terminate.
+		\item Unreachable target: output a warning and the closest achievable solution.
+		\item Joint angles exceeding limits are clamped to valid ranges.
+		\item \missing{Logging mechanisms and detailed error handling strategy}
+	\end{itemize}
+	
+	\section{Appendix}
+	
+	\missing{Use cases, glossary, test cases, and example outputs}
+	
+\end{document}
