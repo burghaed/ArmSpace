@@ -12,157 +12,86 @@
 
 \geometry{left=3cm,right=3cm,top=2.5cm,bottom=2.5cm}
 
-\hypersetup{
-	colorlinks=true,
-	linkcolor=blue,
-	urlcolor=cyan,
-	pdftitle={Specification: Joint Angle Calculation for Robot Arm},
-	pdfauthor={Eduard Burghardt}
-}
-
-\title{Specification: Joint Angle Calculation for Robot Arm}
-\author{Eduard Burghardt}
+\title{\vspace{-2cm}Software Requirements Specification\\for ArmSpace Project}
+\author{Author: [Your Name]}
 \date{\today}
 
-% Define a macro for missing sections (visible but compile-able)
-\newcommand{\missing}[1]{\textbf{\textcolor{red}{[MISSING: #1]}}}
-
 \begin{document}
-	
 	\maketitle
 	
 	\tableofcontents
 	\newpage
 	
 	\section{Introduction}
+	\subsection{Purpose}
+	This document defines the software requirements specification (SRS) for the ArmSpace project. It outlines the functionality, interfaces, constraints, and testing strategies required for the initial version of the system.
 	
-	This document specifies a small program to calculate joint angles of a multi-segment robot arm.  
-	Visualization and user interface are not part of this project.
+	\subsection{Scope}
+	ArmSpace is a software tool designed to process structured input data, perform calculations via a computation engine, and (in future versions) provide GUI and visualization capabilities. This version focuses on core data parsing and computational correctness.
 	
-	\section{Objectives}
-	
-	The program shall read a configuration file describing the robot arm’s structure and  
-	calculate joint angles to reach a given target position. The results shall be output to a file.
-	
-	\section{Requirements}
-	
-	\subsection{Functional Requirements}
-	
+	\subsection{Definitions and Abbreviations}
 	\begin{itemize}
-		\item Read a JSON configuration file including:
-		\begin{itemize}
-			\item Number of joints
-			\item Lengths of arm segments
-			\item Direction of arm segments
-			\item Rotation axes of joints (each with maximal 2 degrees of freedom)
-			\item Minimum and maximum joint angle limits
-			\item Target position in the global coordinate system
-		\end{itemize}
-		\item Calculate joint angles (inverse kinematics) to reach the target position.
-		\item Output the calculated angles to a file (e.g., JSON or plain text).
-		\item The global coordinate system origin is located at the first joint.
-		\item Handle errors such as unreachable targets gracefully.
-		\item \missing{Additional motion constraints, tool orientation, or obstacle avoidance logic.}
+		\item \textbf{SRS}: Software Requirements Specification
+		\item \textbf{JSON}: JavaScript Object Notation
+		\item \textbf{gtest}: Google Test framework
 	\end{itemize}
 	
-	\subsection{Additional Functional Requirements}
+	\section{Overall Description}
+	\subsection{Product Perspective}
+	ArmSpace is a standalone tool aimed at data processing and computational modeling, with possible future expansion to GUI-based interactions and visual output.
 	
-	\begin{itemize}
-		\item Each joint should have a defined position in the global coordinate system.
-		\item The definition of the robotic arm should include a direction vector.
-		\item Each joint's rotation is limited to a maximum of two degrees of freedom (DOF).
-	\end{itemize}
-	
-	\subsection{Non-Functional Requirements}
-	
-	\begin{itemize}
-		\item Platform independence: development on Mac OS X, execution on Windows.
-		\item Usability: user has minimal computer skills, can only edit the JSON file if needed.
-		\item Performance: calculations should complete in reasonable time; no real-time constraints.
-		\item Extensibility: design should allow future integration of visualization and GUI.
-		\item No current considerations are required for privacy or security measures.
-	\end{itemize}
-	
-	\section{System Architecture}
-	
-	\begin{itemize}
-		\item \textbf{Parser Module}: reads and validates the JSON configuration.
-		\item \textbf{Kinematics Module}: performs inverse kinematics calculation (e.g., CCD algorithm).
-		\item \textbf{Output Module}: writes the computed joint angles to a file.
-		\item \missing{Description of module communication and error handling}
-	\end{itemize}
-	
-	\section{Data Format}
-	
-	\subsection{JSON Configuration File}
-	
-	\begin{verbatim}
-		{
-			"joints": [
-			{
-				"name": "base",
-				"dir" : [0, 0, 1],
-				"length": 100.0,
-				"rotation_axis": [0, 0, 1],
-				"min_angle": -90,
-				"max_angle": 90
-			},
-			{
-				"name": "elbow",
-				"dir" : [0, 1, 0],
-				"length": 80.0,
-				"rotation_axis": [0, 1, 0],
-				"min_angle": 0,
-				"max_angle": 135
-			}
-			],
-			"target": [120, 80, 0]
-		}
-	\end{verbatim}
-	
-	\subsection{Output File}
-	
-	Example output (JSON):
-	
-	\begin{verbatim}
-		{
-			"joint_angles": {
-				"base": 45.0,
-				"elbow": 30.0
-			}
-		}
-	\end{verbatim}
-	
-	\section{Mathematical Model}
-	
-	\subsection{Kinematics}
-	
-	\begin{itemize}
-		\item Each joint rotation is modeled as a rotation around a fixed axis by an angle $\theta_i$.
-		\item The end-effector position is computed by sequential transformations of all joints in the global coordinate frame.
-		\item The inverse kinematics finds angles $\theta_i$ that position the end-effector as close as possible to the target.
-	\end{itemize}
+	\subsection{User Characteristics}
+	Users are expected to be engineers or developers familiar with structured data and mathematical modeling.
 	
 	\subsection{Constraints}
-	
 	\begin{itemize}
-		\item Rotations are limited to one degree of freedom per joint (1 DOF).
-		\item Joint angle limits are enforced.
-		\item If the target is unreachable, the best possible approximation is computed.
-		\item \missing{Further mathematical details such as algorithm choice and solution approach}
+		\item Implementation in C++
+		\item Input and output in JSON format
+		\item Command-line based interface
 	\end{itemize}
 	
-	\section{Error Handling}
-	
+	\section{Functional Requirements}
 	\begin{itemize}
-		\item Invalid or incomplete JSON file: produce an error message and terminate.
-		\item Unreachable target: output a warning and the closest achievable solution.
-		\item Joint angles exceeding limits are clamped to valid ranges.
-		\item \missing{Logging mechanisms and detailed error handling strategy}
+		\item FR1: The system shall parse structured JSON input.
+		\item FR2: The system shall execute computations based on parsed input.
+		\item FR3: The system shall output structured results in JSON format.
 	\end{itemize}
+	
+	\section{Non-Functional Requirements}
+	\begin{itemize}
+		\item NFR1: The system shall process typical input files in under 2 seconds.
+		\item NFR2: The system shall produce human-readable output JSON files.
+		\item NFR3: The system shall be unit tested with minimum 90\% code coverage.
+	\end{itemize}
+	
+	\section{Testing Strategy}
+	\subsection{Overview}
+	This section outlines the testing strategy for the ArmSpace project. The primary goal of testing is to ensure functional correctness, stability, and maintainability of all system components. Testing will include unit tests, regression tests, and optionally integration tests.
+	
+	\subsection{Unit Testing}
+	Unit tests will be implemented using the \texttt{GoogleTest (gtest)} framework. Each major component (e.g., the parser, calculation engine) will be tested in isolation. Unit tests will verify the behavior of public interfaces, handle edge cases, and confirm that invalid inputs are handled gracefully.
+	
+	\subsection{Regression Testing}
+	Regression tests will be based on pre-prepared input and reference output JSON files. These tests will:
+	\begin{itemize}
+		\item Load an input JSON test case.
+		\item Run the relevant module (e.g., calculation engine).
+		\item Compare the actual output with a known-good reference file.
+	\end{itemize}
+	
+	These tests ensure that code changes do not introduce unintended side effects or break existing functionality. A parameterized test setup using \texttt{gtest} will be used to run multiple test cases efficiently.
+	
+	\subsection{Integration Testing}
+	In this context, regression tests will also serve as integration tests, since they validate the cooperation of multiple modules (e.g., parser + calculator). Further integration testing may be developed if system complexity increases.
+	
+	\subsection{Automation and CI}
+	The test suite will be integrated into a continuous integration (CI) pipeline (e.g., GitHub Actions, GitLab CI) to automatically run all unit and regression tests on code commits and pull requests.
 	
 	\section{Appendix}
-	
-	\missing{Use cases, glossary, test cases, and example outputs}
+	\subsection{References}
+	\begin{itemize}
+		\item GoogleTest Framework: \url{https://github.com/google/googletest}
+		\item IEEE 830-1998: Recommended Practice for Software Requirements Specifications
+	\end{itemize}
 	
 \end{document}
