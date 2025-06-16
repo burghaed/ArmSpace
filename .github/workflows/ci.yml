@@ -1,0 +1,29 @@
+name: Build and Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: sudo apt update && sudo apt install -y cmake g++ libgtest-dev nlohmann-json3-dev libeigen3-dev
+
+      - name: Configure the project
+        run: cmake -S . -B build
+
+      - name: Build the project
+        run: cmake --build build
+
+      - name: Run unit tests
+        run: cd build && ctest --output-on-failure
