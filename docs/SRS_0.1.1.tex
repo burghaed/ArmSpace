@@ -1,4 +1,5 @@
 \documentclass{article}
+\usepackage{float}
 \usepackage{hyperref}
 \usepackage{geometry}
 \usepackage{amsmath}
@@ -68,6 +69,22 @@ Future versions may be ported to additional platforms.
     \item Command-line interface (CLI) for the current version
 \end{itemize}
 
+\section{Project Folder Structure}
+The following **organized directory layout** ensures clarity and maintainability:
+
+\begin{itemize}
+    \item \texttt{/src} – Source code files
+    \item \texttt{/include} – Header files
+    \item \texttt{/tests} – Unit and integration tests
+    \item \texttt{/docs} – Documentation (SRS, readme, architecture diagram)
+    \item \texttt{/logs} – Log files (saved runtime information)
+    \item \texttt{/build} – Compiled binaries and intermediate files
+    \item \texttt{/config} – JSON input/output examples
+    \item \texttt{/schemas} – JSON schema files for validation
+    \item \texttt{CMakeLists.txt} – CMake build configuration
+    \item \texttt{README.md} – Project overview and instructions
+\end{itemize}
+
 \section{JSON Format Specification}
 \subsection{JSON Input Format}
 The system expects a structured JSON input, describing joints, motors, and arm segments.
@@ -135,7 +152,7 @@ The system calculates movements based on quaternion-based rotations and outputs 
 \subsection{Error Reporting and Logging}
 Standardized error codes ensure structured fault recovery.
 
-\begin{table}[h]
+\begin{table}[H]
 \centering
 \begin{tabular}{|c|l|p{8cm}|}
 \hline
@@ -173,17 +190,38 @@ If an error occurs, the system returns a structured JSON error message.
 
 \section{Mathematical Formulation}
 \subsection{Quaternion-Based Rotation Computation}
+To ensure precise, stable transformations and prevent **gimbal lock**, the system computes joint rotations using quaternions.
+
+\subsection{Quaternion Representation}
 A quaternion is defined as:
 
 
+
 \[
-q = \cos(\theta/2) + \sin(\theta/2) \cdot (x, y, z)
+q = w + x\mathbf{i} + y\mathbf{j} + z\mathbf{k}
 \]
 
 
 
-\subsection{Applying Quaternion Rotation}
-Given an initial vector \( P \), we apply the quaternion transformation:
+where:
+\begin{itemize}
+    \item \( w \) is the scalar (real) component.
+    \item \( x, y, z \) are the vector (imaginary) components along **X, Y, Z axes**.
+\end{itemize}
+
+\subsection{Computing Rotation Using Quaternions}
+Given a rotation by angle \( \theta \) around a normalized axis \( \mathbf{a} = (a_x, a_y, a_z) \), the quaternion is:
+
+
+
+\[
+q = \cos(\theta/2) + (a_x\mathbf{i} + a_y\mathbf{j} + a_z\mathbf{k}) \sin(\theta/2)
+\]
+
+
+
+For a given vector \( P = (p_x, p_y, p_z) \), the rotated vector \( P' \) is computed using:
+
 
 
 \[
@@ -192,12 +230,174 @@ P' = q P q^{-1}
 
 
 
-\section{Performance Considerations}
-Optimization monitoring will focus on:
+where \( q^{-1} \) is the inverse quaternion:
+
+
+
+\[
+q^{-1} = \frac{w - x\mathbf{i} - y\mathbf{j} - z\mathbf{k}}{||q||^2}
+\]
+
+
+
+\section{Example Calculation: Quaternion-Based Arm Rotation}
+\subsection{Robot Configuration}
 \begin{itemize}
-    \item **Execution Speed**
-    \item **Memory Usage**
-    \item **Algorithm Efficiency**
+    \item \textbf{Joint 1 (Shoulder)}: Positioned at \( (0, 0, 0) \), rotates **around Z-axis**.
+    \item \textbf{Joint 2 (Elbow)}: Positioned at \( (10, 0, 0) \), rotates **around Y-axis**.
+    \item \textbf{Arm segments}:
+        \begin{itemize}
+            \item Segment **1**: Length = 10, direction = \([1, 0, 0]\).
+            \item Segment **2**: Length = 10, direction = \([1, 0, 0]\).
+        \end{itemize}
+    \item \textbf{Desired end-effector position}: \( (10, 7, 5) \).
 \end{itemize}
 
+\subsection{Computing Rotation Using Quaternions}
+\textbf{Step 1: Convert Position Vectors to Quaternions}
+
+\begin{itemize}
+    \item Current vector: \( v_1 = [10, 0, 0] \).
+    \item Target vector: \( v_2 = [10, 7, 5] \).
+\end{itemize}
+
+\textbf{Step 2: Compute Rotation Axis}
+
+Using the **cross product**:
+
+
+
+\[
+\mathbf{axis} = v_1 \times v_2 = [0, -50, 70]
+\]
+
+
+
+Normalized:
+
+
+
+\[
+\mathbf{axis} = [0, -0.58, 0.82]
+\]
+
+
+
+\textbf{Step 3: Compute Rotation Angle}
+
+Using the **dot product**:
+
+
+
+\[
+\theta = \cos^{-1} \left( \frac{10 \times 10 + 0 \times 7 + 0 \times 5}{|v_1| |v_2|} \right) = \cos^{-1} (0.81) \approx 35^\circ
+\]
+
+
+
+\textbf{Step 4: Compute Rotation Quaternion}
+
+
+
+\[
+q = \cos(\theta/2) + \sin(\theta/2) \cdot (0, -0.58, 0.82)
+\]
+
+
+
+
+
+\[
+q = [0.98, 0, -0.29, 0.41]
+\]
+
+
+
+\textbf{Step 5: Apply Quaternion Transformation}
+
+
+
+\[
+P' = q P q^{-1}
+\]
+
+
+
+After calculations, the new joint position is **adjusted to** \( P' = [10, 6.9, 4.9] \), moving the arm toward the target **without gimbal lock**.
+
+\subsection{Motor Tick Conversion}
+Using motor resolution:
+
+
+
+\[
+\mathrm{Ticks} = \left(\frac{\theta \times \text{ticks\_per\_revolution}}{360} \right)
+\]
+
+
+
+For **shoulder** (motor resolution: **1000** ticks/rev):
+
+
+
+\[
+\mathrm{Ticks}_{\text{shoulder}} = \left(\frac{35 \times 1000}{360} \right) = 97
+\]
+
+
+
+For **elbow** (motor resolution: **1200** ticks/rev):
+
+
+
+\[
+\mathrm{Ticks}_{\text{elbow}} = \left(\frac{30 \times 1200}{360} \right) = 100
+\]
+
+
+
+\subsection{Final JSON Output}
+\begin{verbatim}
+{
+    "motor_ticks": [
+        { "name": "shoulder_motor_x", "ticks": 97 },
+        { "name": "shoulder_motor_z", "ticks": 82 },
+        { "name": "elbow_motor_y", "ticks": 100 },
+        { "name": "elbow_motor_x", "ticks": 105 }
+    ],
+    "status": "adjusted",
+    "final_position": [10, 6.9, 4.9]
+}
+\end{verbatim}
+
+
+
+\section{Functional Requirements}
+\begin{itemize}
+  \item FR1: The system shall parse structured JSON input files.
+  \item FR2: The system shall perform computations using the parsed input.
+  \item FR3: The system shall generate structured output in JSON format.
+  \item FR4: The system shall validate input and report errors clearly.
+\end{itemize}
+
+\section{Non-Functional Requirements}
+\begin{itemize}
+  \item NFR1: The system shall run on macOS and Windows platforms.
+  \item NFR2: The system shall be written in portable C++.
+  \item NFR3: The system shall process typical input within 2 seconds.
+  \item NFR4: The system shall achieve a minimum of 90\% unit test coverage.
+\end{itemize}
+
+\section{Testing Strategy}
+\subsection{Overview}
+Testing includes unit, regression, and basic integration tests to ensure correctness and stability.
+
+\subsection{Unit Testing}
+Implemented using GoogleTest (gtest), covering modules like the parser and calculation engine.
+
+\subsection{Regression Testing}
+Uses prepared input/output JSON files to compare results with reference data.
+
+\subsection{Integration Testing}
+Regression tests will serve as integration tests by validating module interactions.
 \end{document}
