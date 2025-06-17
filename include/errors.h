@@ -6,8 +6,10 @@
 //
 
 #pragma once
+#include <array>
 #include <map>
-#include <vector>
+#include <string>
+
 
 namespace Errors {
     enum class ERROR : unsigned short {
