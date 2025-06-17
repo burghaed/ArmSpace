@@ -1,0 +1,28 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+        "robot_name": { "type": "string" },
+        "joints": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": { "type": "string" },
+                    "position": { "type": "array", "items": { "type": "number" } },
+                    "motors": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "name": { "type": "string" },
+                                "rotation_axis": { "type": "array", "items": { "type": "number" } },
+                                "ticks_per_revolution": { "type": "integer" }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
