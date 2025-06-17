@@ -6,11 +6,8 @@
 //
 
 #include "robotor_arm_validator.h"
-#include <nlohmann/json.hpp>
 
 namespace JSON {
-    RobotorArmValidator::RobotorArmValidator(const nlohmann::jason& input ) : input_(&input) {
-        
-    }
+    
 }
 
