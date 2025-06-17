@@ -8,6 +8,5 @@
 #include "robotor_arm_validator.h"
 
 namespace JSON {
-    
-}
-
+void RobotorArmValidator::validate_scheme(const nlohmann::json &input) {}
+} // namespace JSON
