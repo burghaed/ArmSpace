@@ -72,18 +72,26 @@ Future versions may be ported to additional platforms.
 \section{Project Folder Structure}
 The following **organized directory layout** ensures clarity and maintainability:
 
-\begin{itemize}
-    \item \texttt{/src} – Source code files
-    \item \texttt{/include} – Header files
-    \item \texttt{/tests} – Unit and integration tests
-    \item \texttt{/docs} – Documentation (SRS, readme, architecture diagram)
-    \item \texttt{/logs} – Log files (saved runtime information)
-    \item \texttt{/build} – Compiled binaries and intermediate files
-    \item \texttt{/config} – JSON input/output examples
-    \item \texttt{/schemas} – JSON schema files for validation
-    \item \texttt{CMakeLists.txt} – CMake build configuration
-    \item \texttt{README.md} – Project overview and instructions
-\end{itemize}
+\begin{verbatim}[fontsize=\small]
+ArmSpace/
+|-- CMakeLists.txt
+|-- cli/
+|   `-- CMakeLists.txt
+|-- libs/
+|   |-- error/
+|   |   `-- CMakeLists.txt
+|   |-- parser/
+|   |   `-- CMakeLists.txt
+|   |-- writer/
+|   |   `-- CMakeLists.txt
+|   |-- engine/
+|   |   `-- CMakeLists.txt
+|   `-- validator/
+|       `-- CMakeLists.txt
+|-- tests/
+|   `-- CMakeLists.txt
+`-- build/
+\end{verbatim}
 
 \section{JSON Format Specification}
 \subsection{Reading JSON from Command-Line Argument}
