@@ -3,9 +3,6 @@ file(GLOB_RECURSE HEADER_FILES CONFIGURE_DEPENDS *.h *.hpp)
 
 add_library(validator_lib ${SRC_FILES} ${HEADER_FILES})
 
-target_link_directories(validator_lib PUBLIC
-    /usr/local/lib
-)
 add_library(nlohmann_json_schema_validator STATIC IMPORTED)
 set_target_properties(nlohmann_json_schema_validator PROPERTIES
     IMPORTED_LOCATION_DEBUG /usr/local/lib/libnlohmann_json_schema_validator.a
