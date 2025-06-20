@@ -189,6 +189,24 @@ ERR008 & Tick Calculation Overflow & The computed tick value exceeds the allowed
 \caption{Complete error code table for validation and computation}
 \end{table}
 
+\subsection{Validation Strategy and Behavior}
+The \textbf{Validator} performs two levels of checks before computation:
+
+\begin{enumerate}
+	\item \textbf{Schema Validation}: The input JSON is checked against a strict JSON schema definition. This ensures all required fields, types, and formats are correct. If this validation fails, the validator terminates immediately with a schema error.
+	
+	\item \textbf{Content Consistency Validation}: If the schema check passes, the validator performs domain-specific semantic checks, including:
+	\begin{itemize}
+		\item All \textbf{rotation axes} are valid unit vectors.
+		\item \textbf{Joint connectivity} is structurally correct (e.g., each joint's position corresponds to the preceding segment).
+		\item Motor definitions are complete and values are within acceptable bounds.
+		\item Arm segment directions and lengths are physically meaningful and consistent.
+	\end{itemize}
+\end{enumerate}
+
+Unlike schema validation, content validation collects all issues and reports them together to aid debugging. These errors are returned in a structured JSON format that lists each violation with a corresponding error code and message.
+
+
 \subsection{JSON Error Response Format}
 If an error occurs, the system returns a structured JSON error message.
 
