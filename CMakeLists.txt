@@ -9,6 +9,7 @@ find_package(nlohmann_json REQUIRED)
 find_package(Eigen3 QUIET)
 
 # Add subdirectories
+add_subdirectory(libs/errors)
 #add_subdirectory(libs/parser)
 #add_subdirectory(libs/writer)
 #add_subdirectory(libs/engine)

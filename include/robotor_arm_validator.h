@@ -1,5 +1,6 @@
 #pragma once
 #include "errors.h"
+#include <fstream>
 #include <nlohmann/json-schema.hpp>
 #include <nlohmann/json.hpp>
 
@@ -10,8 +11,8 @@ class RobotorArmValidator {
   nlohmann::json_schema::json_validator validator;
   nlohmann::json schema;
 
-  void loadSchema(const std::string &schemaPath) {
-    std::ifstream file(SCHEME_NAME);
+  void loadSchema() {
+    std::ifstream file(SCHEME_PATH);
     if (!file) {
       throw std::runtime_error("Error: Unable to open schema file.");
     }
@@ -19,7 +20,7 @@ class RobotorArmValidator {
     try {
       file >> schema;
       validator.set_root_schema(schema);
-    } catch (const json::parse_error &e) {
+    } catch (const nlohmann::json::parse_error &e) {
       throw std::runtime_error("Schema Parsing Error: " +
                                std::string(e.what()));
     }
