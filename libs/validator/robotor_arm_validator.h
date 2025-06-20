@@ -7,12 +7,10 @@
 namespace JSON {
 using error_container_t = std::vector<Errors::error_t>;
 class RobotorArmValidator {
-  const char *SCHEME_PATH = "schemes/input_scheme.json";
   error_container_t error_;
-  nlohmann::json_schema::json_validator validator;
-  nlohmann::json schema;
+  nlohmann::json_schema::json_validator validator_;
 
-  void loadSchema(const std::string &schemaPath);
+  void loadSchema();
 
 public:
   void validate_scheme(const nlohmann::json &input);

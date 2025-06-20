@@ -13,29 +13,38 @@
 
 namespace JSON {
 
-void RobotorArmValidator::loadSchema(const std::string &schemaPath) {
+void RobotorArmValidator::loadSchema() {
   nlohmann::json schema_json = nlohmann::json::parse(std::string(
       reinterpret_cast<const char *>(
           _Users_eduardtburghardt_Documents_Codding_ArmSpace_schemes_input_scheme_json),
       _Users_eduardtburghardt_Documents_Codding_ArmSpace_schemes_input_scheme_json_len));
 
-  validator.set_root_schema(schema);
+  validator_.set_root_schema(schema_json);
 }
 void RobotorArmValidator::validate_scheme(const nlohmann::json &input) {
   try {
-    loadSchema(SCHEME_PATH);
+    loadSchema();
+    validator_.validate(input);
   } catch (nlohmann::json::parse_error &ex) {
     error_.emplace_back(
         Errors::ERROR::MAILFORMED_JSON,
         Errors::error_code_to_message_table.at(
             static_cast<size_t>(Errors::ERROR::MAILFORMED_JSON)),
         ex.what());
+    std::cerr << "Error: "
+              << Errors::error_code_to_message_table.at(
+                     static_cast<size_t>(Errors::ERROR::MAILFORMED_JSON))
+              << " " << ex.what();
   } catch (std::exception &ex) {
     error_.emplace_back(
         Errors::ERROR::NO_JSON_FILE_SPECIFIED,
         Errors::error_code_to_message_table.at(
             static_cast<size_t>(Errors::ERROR::NO_JSON_FILE_SPECIFIED)),
         ex.what());
+    std::cerr << "Error: "
+              << Errors::error_code_to_message_table.at(
+                     static_cast<size_t>(Errors::ERROR::NO_JSON_FILE_SPECIFIED))
+              << " " << ex.what();
   }
 }
 

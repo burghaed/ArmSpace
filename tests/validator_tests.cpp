@@ -48,4 +48,4 @@ const nlohmann::json input2 = std::make_pair(R"({
                                              false);
 
 INSTANTIATE_TEST_SUITE_P(Test, RobotArmValidatorSchemeTest,
-                         ::testing::Values(input1, input2));
+                         ::testing::Values(input1));

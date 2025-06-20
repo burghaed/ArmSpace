@@ -8,6 +8,7 @@ else
     exit 1
 fi
 
+
 echo "Creating build folder..."
 mkdir build
 cd build || { echo "Failed to enter build directory"; exit 1; }
@@ -15,6 +16,7 @@ cd build || { echo "Failed to enter build directory"; exit 1; }
 echo "Running CMake with -G Xcode..."
 if cmake .. -G Xcode; then
     echo "CMake configuration succeeded"
+	cmake --build build --target embed_schemas
     # Step 4: Open the generated Xcode project
     echo "Opening ArmSpace.xcodeproj..."
     open ArmSpace.xcodeproj/
