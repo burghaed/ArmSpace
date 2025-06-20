@@ -25,18 +25,19 @@ enum class ERROR : unsigned short {
   NUM_ERR
 };
 
-using error_table_t =
+using error_code_to_description_table_t =
     std::array<std::string, static_cast<size_t>(ERROR::NUM_ERR)>;
 
-error_table_t error_table = {"Invalid Arm Length",
-                             "Disconected Joint",
-                             "Malformed JSON",
-                             "Motor Data Missing",
-                             "Unsupported Joint Count",
-                             "Invalid Rotation Axis",
-                             "Quternion Calculation Failed",
-                             "Tick Calculation Overflow",
-                             "No JSON file specified",
-                             "Cannot open file",
-                             "JSON Parsing Error"};
+error_code_to_description_table_t error_code_to_message_table = {
+    "Invalid Arm Length",
+    "Disconected Joint",
+    "Malformed JSON",
+    "Motor Data Missing",
+    "Unsupported Joint Count",
+    "Invalid Rotation Axis",
+    "Quternion Calculation Failed",
+    "Tick Calculation Overflow",
+    "No JSON file specified",
+    "Cannot open file",
+    "JSON Parsing Error"};
 } // namespace Errors

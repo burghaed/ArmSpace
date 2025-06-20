@@ -5,26 +5,14 @@
 #include <nlohmann/json.hpp>
 
 namespace JSON {
+using error_container_t = std::vector<Errors::error_t>;
 class RobotorArmValidator {
   const char *SCHEME_PATH = "schemes/input_scheme.json";
-  std::vector<Errors::ERROR> error_;
+  error_container_t error_;
   nlohmann::json_schema::json_validator validator;
   nlohmann::json schema;
 
-  void loadSchema(const std::string &schemaPath) {
-    std::ifstream file(schemaPath);
-    if (!file) {
-      throw std::runtime_error("Error: Unable to open schema file.");
-    }
-
-    try {
-      file >> schema;
-      validator.set_root_schema(schema);
-    } catch (const nlohmann::json::parse_error &e) {
-      throw std::runtime_error("Schema Parsing Error: " +
-                               std::string(e.what()));
-    }
-  }
+  void loadSchema(const std::string &schemaPath);
 
 public:
   void validate_scheme(const nlohmann::json &input);
@@ -33,6 +21,6 @@ public:
 
   bool is_success() const { return error_.empty(); }
 
-  const std::vector<Errors::ERROR> &errors() const { return error_; }
+  const error_container_t &errors() const { return error_; }
 };
 } // namespace JSON
