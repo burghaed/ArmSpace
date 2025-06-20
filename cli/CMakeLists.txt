@@ -1,0 +1,5 @@
+add_executable(ArmSpace main.cpp)
+target_link_libraries(ArmSpace PRIVATE
+   	errors_lib
+    validator_lib
+)
