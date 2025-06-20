@@ -14,12 +14,11 @@
 namespace JSON {
 
 void RobotorArmValidator::loadSchema(const std::string &schemaPath) {
-  std::ifstream file(schemaPath);
-  if (!file) {
-    throw std::runtime_error("Error: Unable to open schema file.");
-  }
+  nlohmann::json schema_json = nlohmann::json::parse(std::string(
+      reinterpret_cast<const char *>(
+          _Users_eduardtburghardt_Documents_Codding_ArmSpace_schemes_input_scheme_json),
+      _Users_eduardtburghardt_Documents_Codding_ArmSpace_schemes_input_scheme_json_len));
 
-  file >> schema;
   validator.set_root_schema(schema);
 }
 void RobotorArmValidator::validate_scheme(const nlohmann::json &input) {
