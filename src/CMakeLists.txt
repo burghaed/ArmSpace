@@ -1,6 +1,0 @@
-file(GLOB_RECURSE SOURCES ${CMAKE_SOURCE_DIR}/src/*.cpp)
-file(GLOB_RECURSE HEADERS ${CMAKE_SOURCE_DIR}/include/*.h)
-include_directories(${CMAKE_SOURCE_DIR}/include)
-add_executable(ArmSpace ${SOURCES} ${HEADERS})
-target_link_libraries(ArmSpace PRIVATE Eigen3::Eigen nlohmann_json::nlohmann_json)
-install(TARGETS ArmSpace DESTINATION bin)
