@@ -13,7 +13,12 @@ mkdir build
 cd build || { echo "Failed to enter build directory"; exit 1; }
 
 echo "Running CMake with -G Xcode..."
-cmake .. -G Xcode
-
-echo "Opening ArmSpace.xcodeproj..."
-open ArmSpace.xcodeproj/
+if cmake .. -G Xcode; then
+    echo "CMake configuration succeeded"
+    # Step 4: Open the generated Xcode project
+    echo "Opening ArmSpace.xcodeproj..."
+    open ArmSpace.xcodeproj/
+else
+    echo "CMake failed — Xcode project will not be opened."
+    exit 1
+fi
