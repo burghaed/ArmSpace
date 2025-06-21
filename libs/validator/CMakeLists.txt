@@ -13,7 +13,7 @@ foreach(SCHEMA_FILE ${SCHEMA_FILES})
     add_custom_command(
         OUTPUT ${OUT_HEADER}
         COMMAND ${CMAKE_COMMAND} -E make_directory ${GENERATED_DIR}
-        COMMAND xxd -i ${SCHEMA_FILE} > ${OUT_HEADER}
+        COMMAND xxd -i -n ${SCHEMA_NAME}_json ${SCHEMA_FILE} > ${OUT_HEADER}
                 DEPENDS ${SCHEMA_FILE}
         COMMENT "Embedding ${SCHEMA_NAME}.json as ${OUT_HEADER}"
     )
